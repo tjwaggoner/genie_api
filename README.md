@@ -2,6 +2,28 @@
 
 Python examples for managing Databricks Genie Spaces programmatically via REST API.
 
+## What This Covers
+
+Two pathways for building and managing Genie Spaces entirely through code:
+
+**Pathway A — Inline Measures** (`demo.py` → Space A)
+Creates a Genie Space with metrics defined directly in the `serialized_space` payload. Walks through:
+- Creating a space with inline measures, filters, expressions, and text instructions
+- Adding sample questions and example SQL queries
+- Configuring column-level entity matching and format assistance
+- Updating measures, data sources, and permissions via PATCH
+- Appending context to existing text instructions
+
+**Pathway B — Unity Catalog Metric Views** (`demo.py` → Space B)
+Creates a Genie Space backed by governed metric views in Unity Catalog. Walks through:
+- Creating a metric view via SQL DDL (`CREATE OR REPLACE VIEW ... WITH METRICS`)
+- Attaching the metric view to a space via `data_sources.metric_views`
+
+Both pathways produce live Genie Spaces with:
+- Tables from `waggoner.finance` (invoices, payments, accounts)
+- Full context (text instructions, example SQL, snippets, sample questions)
+- Permissions granted to users and groups
+
 ## Setup
 
 ```bash
