@@ -136,13 +136,24 @@ Key constraints discovered during testing:
 - **Updates use PATCH** (not PUT) on `/api/2.0/genie/spaces/{space_id}`
 - **Permission PATCH format** uses `permission_level` directly on ACL entries (not nested in `all_permissions`)
 
-## Testing
+## Running
 
+**Integration tests** — runs all four examples, verifies results, cleans up after:
 ```bash
 python3 run_tests.py
 ```
 
-Runs integration tests against a live workspace, creating/updating/deleting test spaces for each example.
+**Demo** — creates two persistent Genie Spaces (inline measures + metric views) and leaves them live:
+```bash
+python3 demo.py
+```
+
+**Cleanup** — finds and deletes spaces created by the examples:
+```bash
+python3 05_cleanup.py              # spaces only
+python3 05_cleanup.py --tables     # also drop test tables
+python3 05_cleanup.py --schema     # also drop the schema
+```
 
 ## References
 
