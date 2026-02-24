@@ -40,7 +40,7 @@ init_from_cli(profile="e2-field")
 Two approaches for managing metrics:
 
 - **Inline Measures** — Define metrics directly in `serialized_space.instructions.sql_snippets.measures` via `POST` or `PATCH`. Each measure has an `id`, `sql` (array), and `display_name`. Best for space-specific calculations.
-- **Unity Catalog Metric Views (Recommended)** — Create governed, reusable metrics via `CREATE OR REPLACE VIEW ... WITH METRICS LANGUAGE YAML AS $$ ... $$ FROM ...` DDL and attach them to `data_sources.metric_views`. Shared across Genie, Dashboards, and SQL Alerts. Requires the Metric Views feature to be enabled.
+- **Unity Catalog Metric Views (Recommended)** — Create governed, reusable metrics via DDL and attach them to `data_sources.metric_views`. The DDL uses `version: 1.1` YAML with `source:` inside the block (not `$$ FROM`). Shared across Genie, Dashboards, and SQL Alerts.
 
 ### 2. Add/Update Data Sources (`02_data_sources.py`)
 
@@ -69,6 +69,38 @@ Context is managed through the `serialized_space` JSON payload:
 - `PATCH` to update
 
 Supported context sources: `text_instructions` (1 item, content is a string array), `example_question_sqls` (static or parameterized for "Trusted" badge), `sql_snippets` (filters, expressions, measures), `config.sample_questions`, and `column_configs` on tables (entity matching, format assistance).
+
+### 5. Clean Up (`05_cleanup.py`)
+
+Finds and deletes Genie Spaces created by the examples. Optionally drops test tables (`--tables`) and the schema (`--schema`).
+
+### Demo (`demo.py`)
+
+Step-by-step demo that creates two persistent Genie Spaces — one with inline measures and one with metric views — walking through all four examples. Nothing is cleaned up; run `05_cleanup.py` when done.
+
+## Metric View DDL Syntax
+
+```sql
+CREATE OR REPLACE VIEW catalog.schema.mv_name
+WITH METRICS
+LANGUAGE YAML
+AS $$
+  version: 1.1
+  comment: "Description"
+
+  source: catalog.schema.source_table
+
+  dimensions:
+    - name: Dimension Name
+      expr: column_expression
+
+  measures:
+    - name: Measure Name
+      expr: AGG(column)
+$$;
+```
+
+Key: `source:` goes inside the YAML block (not `$$ FROM table`), and the block ends with `$$;`.
 
 ## Serialized Space Schema (v2)
 
